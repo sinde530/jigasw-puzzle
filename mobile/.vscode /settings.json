@@ -1,0 +1,47 @@
+{
+  "explorer.confirmDelete": false,
+  "database-client.autoSync": true,
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.jsx": "javascriptreact"
+  },
+  "files.autoSave": "onFocusChange",
+  "git.autofetch": true,
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.colorCustomizations": {
+    "editorError.foreground": "#00ff04"
+  },
+  "workbench.startupEditor": "none",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.format.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "typescript.validate.enable": true,
+  "editor.autoClosingQuotes": "never",
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  "prettier.printWidth": 100,
+  "prettier.singleQuote": true,
+  "workbench.colorTheme": "Dracula Theme",
+  "indentRainbow.colors": [
+    "rgba(139,233,253,0.07)", // 청록색 (Cyan)
+    "rgba(80,250,123,0.07)", // 연녹색 (Light Green)
+    "rgba(189,147,249,0.07)", // 보라색 (Purple)
+    "rgba(255,121,198,0.07)", // 핑크색 (Pink)
+    "rgba(255,184,108,0.07)" // 주황색 (Orange)
+  ]
+}
