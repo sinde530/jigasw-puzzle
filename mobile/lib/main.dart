@@ -1,125 +1,209 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const PuzzleApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class PuzzleApp extends StatelessWidget {
+  const PuzzleApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      home: const ImageSelectionScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class ImageSelectionScreen extends StatelessWidget {
+  const ImageSelectionScreen({super.key});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+  final List<String> images = const [
+    'assets/image1.jpeg',
+    'assets/image2.png',
+    'assets/image3.jpeg',
+  ];
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  void _navigateToPuzzle(BuildContext context, String imagePath) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PuzzleSizeSelectionScreen(imagePath: imagePath),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      appBar: AppBar(title: const Text('이미지 선택')),
+      body: GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
         ),
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () => _navigateToPuzzle(context, images[index]),
+            child: Card(
+              elevation: 4,
+              child: Image.asset(images[index], fit: BoxFit.cover),
+            ),
+          );
+        },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class PuzzleSizeSelectionScreen extends StatelessWidget {
+  final String imagePath;
+  const PuzzleSizeSelectionScreen({super.key, required this.imagePath});
+
+  final List<int> puzzleSizes = const [3, 4, 5];
+
+  void _startPuzzle(BuildContext context, int size) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            PuzzleScreen(imagePath: imagePath, gridSize: size),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('퍼즐 크기 선택')),
+      body: ListView(
+        children: puzzleSizes.map((size) {
+          return ListTile(
+            title: Text('$size x $size 퍼즐'),
+            onTap: () => _startPuzzle(context, size),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class PuzzleScreen extends StatefulWidget {
+  final String imagePath;
+  final int gridSize;
+
+  const PuzzleScreen(
+      {super.key, required this.imagePath, required this.gridSize});
+
+  @override
+  State<PuzzleScreen> createState() => _PuzzleScreenState();
+}
+
+class _PuzzleScreenState extends State<PuzzleScreen> {
+  List<ui.Image>? puzzlePieces;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImage();
+  }
+
+  Future<void> _loadImage() async {
+    final ByteData data = await rootBundle.load(widget.imagePath);
+    final Uint8List bytes = data.buffer.asUint8List();
+    final ui.Codec codec = await ui.instantiateImageCodec(bytes);
+    final ui.FrameInfo frameInfo = await codec.getNextFrame();
+
+    final List<ui.Image> pieces =
+        await splitImage(frameInfo.image, widget.gridSize);
+
+    setState(() {
+      puzzlePieces = pieces;
+    });
+  }
+
+  Future<List<ui.Image>> splitImage(ui.Image image, int gridSize) async {
+    final List<ui.Image> pieces = [];
+    final int pieceWidth = (image.width / gridSize).floor();
+    final int pieceHeight = (image.height / gridSize).floor();
+
+    for (int y = 0; y < gridSize; y++) {
+      for (int x = 0; x < gridSize; x++) {
+        final recorder = ui.PictureRecorder();
+        final Canvas canvas = Canvas(recorder);
+
+        final Rect srcRect = Rect.fromLTWH(
+          x * pieceWidth.toDouble(),
+          y * pieceHeight.toDouble(),
+          pieceWidth.toDouble(),
+          pieceHeight.toDouble(),
+        );
+
+        final Rect dstRect =
+            Rect.fromLTWH(0, 0, pieceWidth.toDouble(), pieceHeight.toDouble());
+
+        canvas.drawImageRect(image, srcRect, dstRect, Paint());
+
+        final ui.Image pieceImage =
+            await recorder.endRecording().toImage(pieceWidth, pieceHeight);
+        pieces.add(pieceImage);
+      }
+    }
+
+    return pieces;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('${widget.gridSize} x ${widget.gridSize} 퍼즐')),
+      body: puzzlePieces == null
+          ? const Center(child: CircularProgressIndicator())
+          : GridView.builder(
+              padding: const EdgeInsets.all(8),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.gridSize,
+                crossAxisSpacing: 0.4,
+                mainAxisSpacing: 0.4,
+              ),
+              itemCount: puzzlePieces!.length,
+              itemBuilder: (context, index) {
+                return PuzzlePiece(image: puzzlePieces![index]);
+              },
+            ),
+    );
+  }
+}
+
+class PuzzlePiece extends StatelessWidget {
+  final ui.Image image;
+
+  const PuzzlePiece({super.key, required this.image});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _imageToWidget(image),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return snapshot.data!;
+        } else {
+          return Container(color: Colors.grey);
+        }
+      },
+    );
+  }
+
+  Future<Widget> _imageToWidget(ui.Image image) async {
+    final ByteData? byteData =
+        await image.toByteData(format: ui.ImageByteFormat.png);
+    final Uint8List uint8List = byteData!.buffer.asUint8List();
+    return Image.memory(uint8List, fit: BoxFit.cover);
   }
 }
